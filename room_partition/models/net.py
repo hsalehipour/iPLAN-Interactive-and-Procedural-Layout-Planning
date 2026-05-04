@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 
@@ -19,7 +20,13 @@ class RendererNet(nn.Module):
 
     def _initialize_weights(self):
         print('load the pretrained Mask generation model')
-        pretrain_model = "./weights/renderer.pkl"
+        # Resolve renderer.pkl relative to this file rather than cwd, so the
+        # network loads correctly no matter where inference is launched from.
+        candidates = [
+            "./weights/renderer.pkl",
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "weights", "renderer.pkl"),
+        ]
+        pretrain_model = next((p for p in candidates if os.path.exists(p)), candidates[0])
         model_dict = torch.load(pretrain_model)
         self.load_state_dict(model_dict)
 

@@ -1,4 +1,15 @@
-import room_partition.models.utils.box_utils as box_utils
+# `room_partition/utils.py` (a module) shadows `room_partition/utils/` (a package),
+# so `from room_partition.utils import box_utils` cannot resolve. Load box_utils
+# directly from its file path to avoid renaming either side.
+import importlib.util as _ilu
+import os as _os
+
+_BOX_UTILS_PATH = _os.path.join(
+    _os.path.dirname(_os.path.abspath(__file__)), "..", "utils", "box_utils.py"
+)
+_spec = _ilu.spec_from_file_location("room_partition_box_utils", _BOX_UTILS_PATH)
+box_utils = _ilu.module_from_spec(_spec)
+_spec.loader.exec_module(box_utils)
 from torch import nn
 import numpy as np
 import torch
